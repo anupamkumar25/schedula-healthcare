@@ -88,6 +88,33 @@ Default port: `6566`. The Postman collection uses `{{base_url}}` set to `http://
 
 ---
 
+## Database: Clear/Reset
+
+You can remove all appointments, availabilities, and registered users in three ways:
+
+- TypeScript script (recommended):
+  - Runs safe deletes in the correct order and verifies counts.
+  - Command:
+    ```bash
+    npm run db:clear
+    ```
+
+- Raw SQL (same effect as above):
+  - Execute against your PostgreSQL database:
+    ```bash
+    psql -U <user> -d <database> -f clear-database.sql
+    ```
+
+- Nuclear reset (drop and recreate tables):
+  - Drops tables and enum types; you must run migrations after.
+  - Commands:
+    ```bash
+    psql -U <user> -d <database> -f reset-database.sql
+    npm run migration:run
+    ```
+
+---
+
 ## API Overview
 
 Auth
@@ -208,6 +235,8 @@ npm run test          # unit tests
 npm run test:e2e      # e2e tests
 npm run test:cov      # coverage
 npm run migration:run # run DB migrations
+npm run db:clear      # delete all data (keeps schema)
+npm run db:reset      # revert and re-run migrations
 ```
 
 ---
