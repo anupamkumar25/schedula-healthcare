@@ -9,6 +9,7 @@ Schedula is a modern healthcare scheduling backend that connects patients and do
 - Segment-tree based slot finder and booking
 - Python ML integration to predict appointment duration
 - JWT auth for patients and doctors, plus a simple chat system
+- Analytics dashboard for operational insights 
 
 ---
 
@@ -159,6 +160,41 @@ Chat
 Tips
 - Always create availability before booking.
 - For queued requests far in the future, expect scheduling to occur the night before the requested date.
+
+---
+
+## Analytics Dashboard
+
+Purpose
+- Provide operational insights for admins and doctors to understand performance and utilization.
+
+Key KPIs
+- Appointments: total, scheduled vs queued, completions, cancellations
+- Queue: average time in queue, pending count by date/doctor, priority mix
+- Utilization: per-doctor booked minutes vs available minutes
+- Availability coverage: hours offered by day, expand/shrink impact
+- ML metrics: prediction error (e.g., MAE) across specialties/time of day
+
+Views
+- Overview (date range filter)
+- Doctor-level drill-down
+- Time-series trends (daily/weekly)
+
+Access
+- Admins: full dataset
+- Doctors: self-only metrics
+
+Data Sources
+- PostgreSQL aggregate queries and/or materialized views computed on a schedule
+
+Planned Endpoints
+- GET `/analytics/overview?from=YYYY-MM-DD&to=YYYY-MM-DD`
+- GET `/analytics/doctor/:doctorId?from&to`
+- GET `/analytics/queue?from&to`
+
+Implementation Notes
+- Backend: NestJS + TypeORM aggregates; cron to refresh materialized views if used
+- Frontend (future): charts for KPIs/trends; secure access via JWT/roles
 
 ---
 

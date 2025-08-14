@@ -16,6 +16,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulingModule } from './scheduling/scheduling.module';
 import { ChatModule } from './chat/chat.module';
 import { Message } from './entities/message-entities';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { Message } from './entities/message-entities';
     AppointmentsModule,
     SchedulingModule,
     ChatModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

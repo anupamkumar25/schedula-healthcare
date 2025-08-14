@@ -25,6 +25,7 @@ const schedule_1 = require("@nestjs/schedule");
 const scheduling_module_1 = require("./scheduling/scheduling.module");
 const chat_module_1 = require("./chat/chat.module");
 const message_entities_1 = require("./entities/message-entities");
+const analytics_module_1 = require("./analytics/analytics.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -65,6 +66,7 @@ exports.AppModule = AppModule = __decorate([
             appointments_module_1.AppointmentsModule,
             scheduling_module_1.SchedulingModule,
             chat_module_1.ChatModule,
+            analytics_module_1.AnalyticsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
