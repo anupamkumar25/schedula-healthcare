@@ -1,0 +1,657 @@
+{
+  "info": {
+    "name": "Schedula Healthcare API",
+    "description": "Complete API collection for Schedula healthcare appointment scheduling system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:6566",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "doctor_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "appointment_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "availability_id",
+      "value": "REPLACE_WITH_ACTUAL_AVAILABILITY_ID",
+      "type": "string"
+    },
+    {
+      "key": "queue_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Patient Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"mobNum\": \"+1234567890\",\n  \"password\": \"securePassword123\",\n  \"dob\": \"1990-05-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/patients/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "patients", "signup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Doctor Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Sarah Johnson\",\n  \"email\": \"sarah.johnson@clinic.com\",\n  \"password\": \"doctorPass123\",\n  \"speciality\": \"Cardiology\",\n  \"yearOfExp\": 8,\n  \"bio\": \"Experienced cardiologist with expertise in interventional procedures.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/doctors/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "doctors", "signup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Patient Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\",\n  \"userType\": \"patient\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', response.access_token);",
+                  "    pm.collectionVariables.set('patient_id', response.user.userId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Doctor Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sarah.johnson@clinic.com\",\n  \"password\": \"doctorPass123\",\n  \"userType\": \"doctor\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', response.access_token);",
+                  "    pm.collectionVariables.set('doctor_id', response.user.userId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": \"{{doctor_id}}\",\n  \"appointmentDate\": \"2024-12-25\",\n  \"appointmentTime\": \"14:30\",\n  \"type\": \"routine\",\n  \"complaint\": \"Regular checkup and blood pressure monitoring\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/Appointments",
+              "host": ["{{base_url}}"],
+              "path": ["Appointments"]
+            }
+          },
+          "response": [
+            {
+              "name": "Queue Entry (Pending)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/Appointments/queue/{{queue_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["Appointments", "queue", "{{queue_id}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"queueId\": \"2245eeeb-fb32-4af5-adae-e3821addc690\",\n    \"patientId\": \"7813b095-81d0-4f6d-a5b2-893dd345c36b\",\n    \"doctorId\": \"03d79642-75cf-416e-a764-b1f4174727fe\",\n    \"requestedDate\": \"2024-12-25\",\n    \"preferredTime\": \"14:30\",\n    \"type\": \"routine\",\n    \"priority\": 1,\n    \"status\": \"pending\",\n    \"originalAppointmentId\": null,\n    \"createdAt\": \"2025-08-13T19:18:14.108Z\"\n  },\n  \"message\": \"Appointment is still in queue and will be scheduled soon.\"\n}"
+            },
+            {
+              "name": "Processed Appointment",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/Appointments/queue/{{queue_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["Appointments", "queue", "{{queue_id}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"appointmentId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"patientId\": \"7813b095-81d0-4f6d-a5b2-893dd345c36b\",\n    \"doctorId\": \"03d79642-75cf-416e-a764-b1f4174727fe\",\n    \"appointmentDate\": \"2024-12-25\",\n    \"appointmentTime\": \"14:30\",\n    \"type\": \"routine\",\n    \"duration\": 30,\n    \"status\": \"upcoming\",\n    \"tokenNumber\": \"DOC1-20241225-001\",\n    \"createdAt\": \"2025-08-13T19:18:14.108Z\"\n  },\n  \"queueStatus\": \"scheduled\"\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.queueId) {",
+                  "        pm.collectionVariables.set('queue_id', response.queueId);",
+                  "        console.log('Queue ID set:', response.queueId);",
+                  "    }",
+                  "    if (response.appointmentId) {",
+                  "        pm.collectionVariables.set('appointment_id', response.appointmentId);",
+                  "        console.log('Appointment ID set:', response.appointmentId);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Patient Appointments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Appointments/patient",
+              "host": ["{{base_url}}"],
+              "path": ["Appointments", "patient"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Appointments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Appointments/doctor",
+              "host": ["{{base_url}}"],
+              "path": ["Appointments", "doctor"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Appointment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Appointments/{{appointment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["Appointments", "{{appointment_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Appointment from Queue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Appointments/queue/{{queue_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["Appointments", "queue", "{{queue_id}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.appointmentId) {",
+                  "        pm.collectionVariables.set('appointment_id', response.data.appointmentId);",
+                  "        console.log('Appointment ID set from queue:', response.data.appointmentId);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/Appointments/{{appointment_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["Appointments", "{{appointment_id}}", "cancel"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Availability Management",
+      "item": [
+        {
+          "name": "Create Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day\": \"monday\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"17:00\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/availability",
+              "host": ["{{base_url}}"],
+              "path": ["availability"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('availability_id', response.availabilityId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Doctor Availabilities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/availability",
+              "host": ["{{base_url}}"],
+              "path": ["availability"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Specific Doctor Availabilities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/availability/doctor/{{doctor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["availability", "doctor", "{{doctor_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Availability",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"endTime\": \"18:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/availability/{{availability_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["availability", "{{availability_id}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Validate that availability_id is set",
+                  "const availabilityId = pm.collectionVariables.get('availability_id');",
+                  "if (!availabilityId || availabilityId === 'REPLACE_WITH_ACTUAL_AVAILABILITY_ID') {",
+                  "    console.error('Please create an availability first or set a valid availability_id');",
+                  "    throw new Error('Invalid availability_id. Please create an availability first.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Availability",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/availability/{{availability_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["availability", "{{availability_id}}"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Validate that availability_id is set",
+                  "const availabilityId = pm.collectionVariables.get('availability_id');",
+                  "if (!availabilityId || availabilityId === 'REPLACE_WITH_ACTUAL_AVAILABILITY_ID') {",
+                  "    console.error('Please create an availability first or set a valid availability_id');",
+                  "    throw new Error('Invalid availability_id. Please create an availability first.');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scheduling",
+      "item": [
+        {
+          "name": "Expand Availability (by Date)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2024-12-23\",\n  \"newEndTime\": \"19:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/scheduling/expand",
+              "host": ["{{base_url}}"],
+              "path": ["scheduling", "expand"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Expand Availability (by Day)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day\": \"monday\",\n  \"newEndTime\": \"19:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/scheduling/expand",
+              "host": ["{{base_url}}"],
+              "path": ["scheduling", "expand"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Shrink Availability (by Date)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2024-12-23\",\n  \"newEndTime\": \"16:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/scheduling/shrink",
+              "host": ["{{base_url}}"],
+              "path": ["scheduling", "shrink"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Shrink Availability (by Day)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day\": \"monday\",\n  \"newEndTime\": \"16:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/scheduling/shrink",
+              "host": ["{{base_url}}"],
+              "path": ["scheduling", "shrink"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat System",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientId\": \"{{doctor_id}}\",\n  \"content\": \"Hello doctor, I have a question about my appointment.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat/send",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "send"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Conversation History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/chat/history/{{doctor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "history", "{{doctor_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Messages as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messageIds\": [\"message-uuid-1\", \"message-uuid-2\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat/read",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "read"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "API Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+} 
