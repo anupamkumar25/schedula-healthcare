@@ -243,4 +243,4 @@ npm run db:reset      # revert and re-run migrations
 
 ## License
 
-MIT
+ANUPAM
