@@ -50,7 +50,17 @@
       "key": "queue_id",
       "value": "",
       "type": "string"
-    }
+      },
+      {
+        "key": "from_date",
+        "value": "2025-08-15",
+        "type": "string"
+      },
+      {
+        "key": "to_date",
+        "value": "2025-08-25",
+        "type": "string"
+      }
   ],
   "item": [
     {
@@ -567,6 +577,63 @@
               "raw": "{{base_url}}/scheduling/shrink",
               "host": ["{{base_url}}"],
               "path": ["scheduling", "shrink"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/overview?from={{from_date}}&to={{to_date}}",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "overview"],
+              "query": [
+                { "key": "from", "value": "{{from_date}}" },
+                { "key": "to", "value": "{{to_date}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Doctor Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/doctor?doctorId={{doctor_id}}&from={{from_date}}&to={{to_date}}",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "doctor"],
+              "query": [
+                { "key": "doctorId", "value": "{{doctor_id}}" },
+                { "key": "from", "value": "{{from_date}}" },
+                { "key": "to", "value": "{{to_date}}" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Queue Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/queue?from={{from_date}}&to={{to_date}}",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "queue"],
+              "query": [
+                { "key": "from", "value": "{{from_date}}" },
+                { "key": "to", "value": "{{to_date}}" }
+              ]
             }
           },
           "response": []
